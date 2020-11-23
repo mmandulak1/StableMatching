@@ -48,3 +48,7 @@ PII-SC Started for Random Inputs of size n=27, 1000000 times
 PII-SC Completed 1000000 trials after 19 minutes and 47 seconds
 PII-SC Started for Random Inputs of size n=28, 1000000 times
 PII-SC Completed 1000000 trials after 18 minutes and 7 seconds
+PII-SC Started for Random Inputs of size n=29, 1000000 times
+PII-SC Completed 1000000 trials after 10 minutes and 45 seconds
+PII-SC Started for Random Inputs of size n=30, 1000000 times
+PII-SC Completed 1000000 trials after 11 minutes and 46 seconds

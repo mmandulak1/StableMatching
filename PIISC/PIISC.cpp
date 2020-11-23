@@ -7,7 +7,7 @@
 #include <cmath>
 using namespace std;
 
-#define N 28
+#define N 30
 
 #define maleInitial true
 #define femaleInitial true
