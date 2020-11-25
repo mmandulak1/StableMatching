@@ -13,7 +13,7 @@ using namespace std;
 #define halfInitial true
 #define logFemaleInitial true
 
-#define printDebug true
+#define printDebug false
 #define CycleDetect true
 #define threeInARowCheck true
 
