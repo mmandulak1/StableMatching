@@ -5,7 +5,7 @@
 #    ./PIISC >> ./RunResults/results_$2.txt
 #    echo "done $i"
 #done
-g++ -o PIISC PIISC.cpp
+g++ -std=c++11 -o PIISC PIISC.cpp
 
 SECONDS=0
 echo "PII-SC Started for Random Inputs of size n=$2, $1 times"
