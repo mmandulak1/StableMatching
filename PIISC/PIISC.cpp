@@ -7,14 +7,13 @@
 #include <cmath>
 using namespace std;
 
-#define N 30
-
+//#define N 30
 #define maleInitial true
 #define femaleInitial true
 #define halfInitial true
 #define logFemaleInitial true
 
-#define printDebug false
+#define printDebug true
 #define CycleDetect true
 #define threeInARowCheck true
 
@@ -81,9 +80,10 @@ class PE
         void incrementMatchingForIterations(){matchingForIterations++;};
         void resetMatchingForIterations(){matchingForIterations=0;};
         void setNm1ChainStartIteration(int x){nm1ChainStartIteration=x;};
+    PE(){}
 };
-int PIISC(PE matrix[N][N]);
-void PrintMatrix(PE matrix[N][N])
+int PIISC(vector<vector<PE>> &matrix, int N);
+void PrintMatrix(vector<vector<PE>> &matrix, int N)
 {
     cout << endl;
     for(int i=0;i<N;i++)
@@ -95,7 +95,7 @@ void PrintMatrix(PE matrix[N][N])
         cout << endl;
     }
 }
-void PrintMatchingMatrix(PE matrix[N][N])
+void PrintMatchingMatrix(vector<vector<PE>> &matrix, int N)
 {
     cout << "Matching Matrix: " << endl;
     for(int i=0;i<N;i++)
@@ -107,7 +107,7 @@ void PrintMatchingMatrix(PE matrix[N][N])
         cout << endl;
     }
 }
-void ResetMatrixValues(PE matrix[N][N])
+void ResetMatrixValues(vector<vector<PE>> &matrix, int N)
 {
     for(int i=0;i<N;i++)
     {
@@ -130,8 +130,33 @@ void ResetMatrixValues(PE matrix[N][N])
         }
     }
 }
-
-bool CheckStableMatching(PE matrix[N][N])
+void InitializeMatrix(vector<vector<PE>> &matrix, int N)
+{
+    vector<PE> v1;
+    PE temp;
+    for(int i=0;i<N;i++)
+    {
+        for(int j=0;j<N;j++)
+        {
+            v1.push_back(temp);
+        }
+        matrix.push_back(v1);
+    }
+}
+void InitializePreferences(vector<vector<int>> &preferences, int N)
+{
+    vector<int> v1;
+    int temp = -1;
+    for(int i=0;i<2*N;i++)
+    {
+        for(int j=0;j<N;j++)
+        {
+            v1.push_back(temp);
+        }
+        preferences.push_back(v1);
+    }
+}
+bool CheckStableMatching(vector<vector<PE>> &matrix, int N)
 {
     bool stableMatching = true;
     for(int i=0;i<N;i++)
@@ -160,7 +185,7 @@ bool CheckStableMatching(PE matrix[N][N])
     return stableMatching;
 }
 
-void ClearMatrixMatching(PE matrix[N][N])
+void ClearMatrixMatching(vector<vector<PE>> &matrix, int N)
 {
     for(int i=0;i<N;i++)
     {
@@ -174,7 +199,7 @@ void ClearMatrixMatching(PE matrix[N][N])
         }
     }
 }
-void InitializeMatrix(PE matrix[N][N], int preferences[2*N][N])
+void InitializeMatrixPrefs(vector<vector<PE>> &matrix, vector<vector<int>> &preferences, int N)
 {
     for(int i=0;i<2*N;i++)
     {
@@ -209,7 +234,7 @@ void InitializeVector(vector<int> &vect, int size, int x)
     }
 }
 
-void BroadcastMatchingRow(PE matrix[N][N],int row, int val)
+void BroadcastMatchingRow(vector<vector<PE>> &matrix,int row, int val, int N)
 {
     for(int j=0;j<N;j++)
     {
@@ -217,7 +242,7 @@ void BroadcastMatchingRow(PE matrix[N][N],int row, int val)
     }
 }
 
-void BroadcastMatchingCol(PE matrix[N][N],int col, int val)
+void BroadcastMatchingCol(vector<vector<PE>> &matrix, int col, int val, int N)
 {
     for(int i=0;i<N;i++)
     {
@@ -225,7 +250,7 @@ void BroadcastMatchingCol(PE matrix[N][N],int col, int val)
     }
 }
 
-void BroadcastMatchingColVal(PE matrix[N][N],int col, int val)
+void BroadcastMatchingColVal(vector<vector<PE>> &matrix,int col, int val,int N)
 {
     for(int i=0;i<N;i++)
     {
@@ -233,7 +258,7 @@ void BroadcastMatchingColVal(PE matrix[N][N],int col, int val)
     }
 }
 
-void BroadcastMatchingRowVal(PE matrix[N][N],int row, int val)
+void BroadcastMatchingRowVal(vector<vector<PE>> &matrix, int row, int val, int N)
 {
     for(int j=0;j<N;j++)
     {
@@ -241,7 +266,7 @@ void BroadcastMatchingRowVal(PE matrix[N][N],int row, int val)
     }
 }
 
-bool IsCompleteMatching(PE matrix[N][N])
+bool IsCompleteMatching(vector<vector<PE>> &matrix, int N)
 {
     vector<int> matchCheck;
     InitializeVector(matchCheck, N, -1);
@@ -265,7 +290,7 @@ bool IsCompleteMatching(PE matrix[N][N])
     }
     return isComplete;
 }
-void GenerateRandomPreferences(int preferences[2*N][N])
+void GenerateRandomPreferences(vector<vector<int>> &preferences, int N)
 {
     for(int i=0;i<2*N;i++)
     {
@@ -296,7 +321,7 @@ void GenerateRandomPreferences(int preferences[2*N][N])
 
 }
 
-void InitialMatching(PE matrix[N][N])
+void InitialMatching(vector<vector<PE>> &matrix, int N)
 {
     vector<int> changes;
     bool roundFlag=false;
@@ -313,10 +338,10 @@ void InitialMatching(PE matrix[N][N])
                 if(matrix[i][j].getLeftVal()==maleProp && matrix[i][j].getMatchingPairInRow()==-1 && matrix[i][j].getMatchingPairInCol()==-1)
                 {
                     matrix[i][j].setMatchingPair(true);
-                    BroadcastMatchingCol(matrix,j,i);
-                    BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal());
-                    BroadcastMatchingRow(matrix,i,j);
-                    BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal());
+                    BroadcastMatchingCol(matrix,j,i,N);
+                    BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal(),N);
+                    BroadcastMatchingRow(matrix,i,j,N);
+                    BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal(),N);
                     matchingCount++;
                     changes.push_back(j);
                     //cout << "i: " << i << " j: " << j << endl;
@@ -333,13 +358,13 @@ void InitialMatching(PE matrix[N][N])
                     if(matrix[matrix[i][j].getMatchingPairInCol()][j].getRightVal()>matrix[i][j].getRightVal() && roundFlag)
                     {
                         matrix[matrix[i][j].getMatchingPairInCol()][j].setMatchingPair(false);
-                        BroadcastMatchingRow(matrix,matrix[i][j].getMatchingPairInCol(),-1);
-                        BroadcastMatchingRowVal(matrix,matrix[i][j].getMatchingPairInCol(),-1);
+                        BroadcastMatchingRow(matrix,matrix[i][j].getMatchingPairInCol(),-1,N);
+                        BroadcastMatchingRowVal(matrix,matrix[i][j].getMatchingPairInCol(),-1,N);
                         matrix[i][j].setMatchingPair(true);
-                        BroadcastMatchingCol(matrix,j,i);
-                        BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal());
-                        BroadcastMatchingRow(matrix,i,j);
-                        BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal());
+                        BroadcastMatchingCol(matrix,j,i,N);
+                        BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal(),N);
+                        BroadcastMatchingRow(matrix,i,j,N);
+                        BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal(),N);
                     }
                     roundFlag=false;
                 }
@@ -370,7 +395,7 @@ void InitialMatching(PE matrix[N][N])
     }
 }
 
-void HalfInitialMatching(PE matrix[N][N])
+void HalfInitialMatching(vector<vector<PE>> &matrix, int N)
 {
     vector<int> changes;
     bool roundFlag=false;
@@ -387,10 +412,10 @@ void HalfInitialMatching(PE matrix[N][N])
                 if(matrix[i][j].getLeftVal()==maleProp && matrix[i][j].getMatchingPairInRow()==-1 && matrix[i][j].getMatchingPairInCol()==-1)
                 {
                     matrix[i][j].setMatchingPair(true);
-                    BroadcastMatchingCol(matrix,j,i);
-                    BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal());
-                    BroadcastMatchingRow(matrix,i,j);
-                    BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal());
+                    BroadcastMatchingCol(matrix,j,i,N);
+                    BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal(),N);
+                    BroadcastMatchingRow(matrix,i,j,N);
+                    BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal(),N);
                     matchingCount++;
                     changes.push_back(j);
                     //cout << "i: " << i << " j: " << j << endl;
@@ -407,13 +432,13 @@ void HalfInitialMatching(PE matrix[N][N])
                     if(matrix[matrix[i][j].getMatchingPairInCol()][j].getRightVal()>matrix[i][j].getRightVal() && roundFlag)
                     {
                         matrix[matrix[i][j].getMatchingPairInCol()][j].setMatchingPair(false);
-                        BroadcastMatchingRow(matrix,matrix[i][j].getMatchingPairInCol(),-1);
-                        BroadcastMatchingRowVal(matrix,matrix[i][j].getMatchingPairInCol(),-1);
+                        BroadcastMatchingRow(matrix,matrix[i][j].getMatchingPairInCol(),-1,N);
+                        BroadcastMatchingRowVal(matrix,matrix[i][j].getMatchingPairInCol(),-1,N);
                         matrix[i][j].setMatchingPair(true);
-                        BroadcastMatchingCol(matrix,j,i);
-                        BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal());
-                        BroadcastMatchingRow(matrix,i,j);
-                        BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal());
+                        BroadcastMatchingCol(matrix,j,i,N);
+                        BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal(),N);
+                        BroadcastMatchingRow(matrix,i,j,N);
+                        BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal(),N);
                     }
                     roundFlag=false;
                 }
@@ -448,7 +473,7 @@ void HalfInitialMatching(PE matrix[N][N])
     }
 }
 
-void InitialMatchingFemale(PE matrix[N][N])
+void InitialMatchingFemale(vector<vector<PE>> &matrix, int N)
 {
     vector<int> changes;
     bool roundFlag=false;
@@ -464,10 +489,10 @@ void InitialMatchingFemale(PE matrix[N][N])
                 if(matrix[j][i].getRightVal()==femaleProp && matrix[j][i].getMatchingPairInRow()==-1 && matrix[j][i].getMatchingPairInCol()==-1)
                 {
                     matrix[j][i].setMatchingPair(true);
-                    BroadcastMatchingCol(matrix,i,j);
-                    BroadcastMatchingColVal(matrix,i,matrix[j][i].getRightVal());
-                    BroadcastMatchingRow(matrix,j,i);
-                    BroadcastMatchingRowVal(matrix,j,matrix[j][i].getLeftVal());
+                    BroadcastMatchingCol(matrix,i,j,N);
+                    BroadcastMatchingColVal(matrix,i,matrix[j][i].getRightVal(),N);
+                    BroadcastMatchingRow(matrix,j,i,N);
+                    BroadcastMatchingRowVal(matrix,j,matrix[j][i].getLeftVal(),N);
                     matchingCount++;
                     changes.push_back(j);
                     //cout << "i: " << i << " j: " << j << endl;
@@ -484,13 +509,13 @@ void InitialMatchingFemale(PE matrix[N][N])
                     if(matrix[j][matrix[j][i].getMatchingPairInRow()].getLeftVal()>matrix[j][i].getLeftVal() && roundFlag)
                     {
                         matrix[j][matrix[j][i].getMatchingPairInRow()].setMatchingPair(false);
-                        BroadcastMatchingCol(matrix,matrix[j][i].getMatchingPairInRow(),-1);
-                        BroadcastMatchingColVal(matrix,matrix[j][i].getMatchingPairInRow(),-1);
+                        BroadcastMatchingCol(matrix,matrix[j][i].getMatchingPairInRow(),-1,N);
+                        BroadcastMatchingColVal(matrix,matrix[j][i].getMatchingPairInRow(),-1,N);
                         matrix[j][i].setMatchingPair(true);
-                        BroadcastMatchingCol(matrix,i,j);
-                        BroadcastMatchingColVal(matrix,i,matrix[j][i].getRightVal());
-                        BroadcastMatchingRow(matrix,j,i);
-                        BroadcastMatchingRowVal(matrix,j,matrix[j][i].getLeftVal());
+                        BroadcastMatchingCol(matrix,i,j,N);
+                        BroadcastMatchingColVal(matrix,i,matrix[j][i].getRightVal(),N);
+                        BroadcastMatchingRow(matrix,j,i,N);
+                        BroadcastMatchingRowVal(matrix,j,matrix[j][i].getLeftVal(),N);
                     }
                     roundFlag=false;
                 }
@@ -520,7 +545,7 @@ void InitialMatchingFemale(PE matrix[N][N])
         }
     }
 }
-void LogFemaleInitialMatching(PE matrix[N][N])
+void LogFemaleInitialMatching(vector<vector<PE>> &matrix, int N)
 {
     vector<int> changes;
     bool roundFlag=false;
@@ -537,10 +562,10 @@ void LogFemaleInitialMatching(PE matrix[N][N])
                 if(matrix[j][i].getRightVal()==femaleProp && matrix[j][i].getMatchingPairInRow()==-1 && matrix[j][i].getMatchingPairInCol()==-1)
                 {
                     matrix[j][i].setMatchingPair(true);
-                    BroadcastMatchingCol(matrix,i,j);
-                    BroadcastMatchingColVal(matrix,i,matrix[j][i].getRightVal());
-                    BroadcastMatchingRow(matrix,j,i);
-                    BroadcastMatchingRowVal(matrix,j,matrix[j][i].getLeftVal());
+                    BroadcastMatchingCol(matrix,i,j,N);
+                    BroadcastMatchingColVal(matrix,i,matrix[j][i].getRightVal(),N);
+                    BroadcastMatchingRow(matrix,j,i,N);
+                    BroadcastMatchingRowVal(matrix,j,matrix[j][i].getLeftVal(),N);
                     matchingCount++;
                     changes.push_back(j);
                     //cout << "i: " << i << " j: " << j << endl;
@@ -557,13 +582,13 @@ void LogFemaleInitialMatching(PE matrix[N][N])
                     if(matrix[j][matrix[j][i].getMatchingPairInRow()].getLeftVal()>matrix[j][i].getLeftVal() && roundFlag)
                     {
                         matrix[j][matrix[j][i].getMatchingPairInRow()].setMatchingPair(false);
-                        BroadcastMatchingCol(matrix,matrix[j][i].getMatchingPairInRow(),-1);
-                        BroadcastMatchingColVal(matrix,matrix[j][i].getMatchingPairInRow(),-1);
+                        BroadcastMatchingCol(matrix,matrix[j][i].getMatchingPairInRow(),-1,N);
+                        BroadcastMatchingColVal(matrix,matrix[j][i].getMatchingPairInRow(),-1,N);
                         matrix[j][i].setMatchingPair(true);
-                        BroadcastMatchingCol(matrix,i,j);
-                        BroadcastMatchingColVal(matrix,i,matrix[j][i].getRightVal());
-                        BroadcastMatchingRow(matrix,j,i);
-                        BroadcastMatchingRowVal(matrix,j,matrix[j][i].getLeftVal());
+                        BroadcastMatchingCol(matrix,i,j,N);
+                        BroadcastMatchingColVal(matrix,i,matrix[j][i].getRightVal(),N);
+                        BroadcastMatchingRow(matrix,j,i,N);
+                        BroadcastMatchingRowVal(matrix,j,matrix[j][i].getLeftVal(),N);
                     }
                     roundFlag=false;
                 }
@@ -602,7 +627,7 @@ void LogFemaleInitialMatching(PE matrix[N][N])
 //Need to make vector to pass from PIISC to here (cycleMatching)
 //Need to do cycle detection
 //Do not need to convert female (already done in PIISCFemale)
-int CycleDetection(PE matrix[N][N], vector<int> &cycleMatching, vector<int> nm1Pairs, int iterations)
+int CycleDetection(vector<vector<PE>> &matrix,vector<int> &cycleMatching, vector<int> nm1Pairs, int iterations, int N)
 {
     if(iterations==3*N)
     {
@@ -756,7 +781,7 @@ int CycleDetection(PE matrix[N][N], vector<int> &cycleMatching, vector<int> nm1P
         }
         if(sameMatching==true)
         {
-            ClearMatrixMatching(matrix);
+            ClearMatrixMatching(matrix,N);
             //Roots
             for(int i=0;i<N;i++)
             {
@@ -765,10 +790,10 @@ int CycleDetection(PE matrix[N][N], vector<int> &cycleMatching, vector<int> nm1P
                     if(matrix[i][j].getMatchingForIterations()==(iterations-3*N))
                     {
                         matrix[i][j].setMatchingPair(true);
-                        BroadcastMatchingCol(matrix,j,i);
-                        BroadcastMatchingRow(matrix,i,j);
-                        BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal());
-                        BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal());
+                        BroadcastMatchingCol(matrix,j,i,N);
+                        BroadcastMatchingRow(matrix,i,j,N);
+                        BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal(),N);
+                        BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal(),N);
                     }
                 }
             }
@@ -824,10 +849,10 @@ int CycleDetection(PE matrix[N][N], vector<int> &cycleMatching, vector<int> nm1P
                 {
                     //cout << "Adding PE" << (*(currCyclePE)).getRow() << (*(currCyclePE)).getCol() << " to the matching " << endl;
                     (*(currCyclePE)).setMatchingPair(true);
-                    BroadcastMatchingCol(matrix,(*(currCyclePE)).getCol(),(*(currCyclePE)).getRow());
-                    BroadcastMatchingRow(matrix,(*(currCyclePE)).getRow(),(*(currCyclePE)).getCol());
-                    BroadcastMatchingColVal(matrix,(*(currCyclePE)).getCol(),(*(currCyclePE)).getRightVal());
-                    BroadcastMatchingRowVal(matrix,(*(currCyclePE)).getRow(),(*(currCyclePE)).getLeftVal());
+                    BroadcastMatchingCol(matrix,(*(currCyclePE)).getCol(),(*(currCyclePE)).getRow(),N);
+                    BroadcastMatchingRow(matrix,(*(currCyclePE)).getRow(),(*(currCyclePE)).getCol(),N);
+                    BroadcastMatchingColVal(matrix,(*(currCyclePE)).getCol(),(*(currCyclePE)).getRightVal(),N);
+                    BroadcastMatchingRowVal(matrix,(*(currCyclePE)).getRow(),(*(currCyclePE)).getLeftVal(),N);
                     currCyclePE = (*(currCyclePE)).getNm1Row_pointer();
                 }
                 else
@@ -842,7 +867,7 @@ int CycleDetection(PE matrix[N][N], vector<int> &cycleMatching, vector<int> nm1P
     return 0;
 
 }
-int PIISCFemale(PE matrix[N][N])
+int PIISCFemale(vector<vector<PE>> &matrix, int N)
 {
     PE* prevPtr;
     bool stableMatching=true;
@@ -1076,10 +1101,10 @@ int PIISCFemale(PE matrix[N][N])
                     {
                         matrix[i][j].setMatchingPair(true);
                         //cout << "Pair " << i << "," << j << " broadcasting independent nm2" << endl;
-                        BroadcastMatchingCol(matrix,j,i);
-                        BroadcastMatchingRow(matrix,i,j);
-                        BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal());
-                        BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal());
+                        BroadcastMatchingCol(matrix,j,i,N);
+                        BroadcastMatchingRow(matrix,i,j,N);
+                        BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal(),N);
+                        BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal(),N);
                     }
                     else if((*(matrix[i][j].getR_pointer())).getRow()==matrix[i][j].getRow() && (*(matrix[i][j].getC_pointer())).getRow()!=matrix[i][j].getRow())
                     {
@@ -1093,10 +1118,10 @@ int PIISCFemale(PE matrix[N][N])
                         }
                         matrix[i][(*(matrix[i][j].getC_pointer())).getCol()].setMatchingPair(true);
                         //cout << "Pair " << i << "," << (*(matrix[i][j].getC_pointer())).getCol() << " broadcasting c ptr" << endl;
-                        BroadcastMatchingCol(matrix,(*(matrix[i][j].getC_pointer())).getCol(),i);
-                        BroadcastMatchingRow(matrix,i,(*(matrix[i][j].getC_pointer())).getCol());
-                        BroadcastMatchingColVal(matrix,(*(matrix[i][j].getC_pointer())).getCol(),(*(matrix[i][j].getC_pointer())).getRightVal());
-                        BroadcastMatchingRowVal(matrix,i,(*(matrix[i][j].getC_pointer())).getLeftVal()); //PROBLEM HERE SOMEWHERE
+                        BroadcastMatchingCol(matrix,(*(matrix[i][j].getC_pointer())).getCol(),i,N);
+                        BroadcastMatchingRow(matrix,i,(*(matrix[i][j].getC_pointer())).getCol(),N);
+                        BroadcastMatchingColVal(matrix,(*(matrix[i][j].getC_pointer())).getCol(),(*(matrix[i][j].getC_pointer())).getRightVal(),N);
+                        BroadcastMatchingRowVal(matrix,i,(*(matrix[i][j].getC_pointer())).getLeftVal(),N); 
 
 
                         
@@ -1113,10 +1138,10 @@ int PIISCFemale(PE matrix[N][N])
                         matrix[(*(matrix[i][j].getR_pointer())).getRow()][j].setMatchingPair(true);
                         //cout << "Pair " << (*(matrix[i][j].getR_pointer())).getRow() << "," << j << " broadcasting r ptr" << endl;
                         //cout << "values: " << (*(matrix[i][j].getR_pointer())).getLeftVal() << " " << (*(matrix[i][j].getR_pointer())).getRightVal() << " of pair " << (*(matrix[i][j].getR_pointer())).getCol() << "," << (*(matrix[i][j].getR_pointer())).getRow() << endl;
-                        BroadcastMatchingCol(matrix,(*(matrix[i][j].getR_pointer())).getCol(),i);
-                        BroadcastMatchingRow(matrix,(*(matrix[i][j].getR_pointer())).getRow(),j);
-                        BroadcastMatchingColVal(matrix,(*(matrix[i][j].getR_pointer())).getCol(),(*(matrix[i][j].getR_pointer())).getRightVal());
-                        BroadcastMatchingRowVal(matrix,(*(matrix[i][j].getR_pointer())).getRow(),(*(matrix[i][j].getR_pointer())).getLeftVal());
+                        BroadcastMatchingCol(matrix,(*(matrix[i][j].getR_pointer())).getCol(),i,N);
+                        BroadcastMatchingRow(matrix,(*(matrix[i][j].getR_pointer())).getRow(),j,N);
+                        BroadcastMatchingColVal(matrix,(*(matrix[i][j].getR_pointer())).getCol(),(*(matrix[i][j].getR_pointer())).getRightVal(),N);
+                        BroadcastMatchingRowVal(matrix,(*(matrix[i][j].getR_pointer())).getRow(),(*(matrix[i][j].getR_pointer())).getLeftVal(),N);
                     }
                 }
             }
@@ -1126,10 +1151,10 @@ int PIISCFemale(PE matrix[N][N])
             if(femaleMaleDominantPairsPos[i]!=-1)
             {
                 matrix[i][femaleMaleDominantPairsPos[i]].setMatchingPair(true);
-                BroadcastMatchingCol(matrix,femaleMaleDominantPairsPos[i],i);
-                BroadcastMatchingRow(matrix,i,femaleMaleDominantPairsPos[i]);
-                BroadcastMatchingColVal(matrix,femaleMaleDominantPairsPos[i],matrix[i][femaleMaleDominantPairsPos[i]].getRightVal());
-                BroadcastMatchingRowVal(matrix,i,matrix[i][femaleMaleDominantPairsPos[i]].getLeftVal());
+                BroadcastMatchingCol(matrix,femaleMaleDominantPairsPos[i],i,N);
+                BroadcastMatchingRow(matrix,i,femaleMaleDominantPairsPos[i],N);
+                BroadcastMatchingColVal(matrix,femaleMaleDominantPairsPos[i],matrix[i][femaleMaleDominantPairsPos[i]].getRightVal(),N);
+                BroadcastMatchingRowVal(matrix,i,matrix[i][femaleMaleDominantPairsPos[i]].getLeftVal(),N);
             }
         }
         for(int i=0;i<N;i++)
@@ -1154,7 +1179,7 @@ int PIISCFemale(PE matrix[N][N])
         int cycleResult;
         if(iterationCount>=3*N && CycleDetect)
         {
-            cycleResult = CycleDetection(matrix,cycleMatching,femaleMaleDominantPairsPos,iterationCount);
+            cycleResult = CycleDetection(matrix,cycleMatching,femaleMaleDominantPairsPos,iterationCount,N);
             if(cycleResult==1)
                 return (-1 * (iterationCount));  
             else if(cycleResult==-1)
@@ -1171,13 +1196,13 @@ int PIISCFemale(PE matrix[N][N])
             }
         }
         if(printDebug){
-            PrintMatchingMatrix(matrix);
+            PrintMatchingMatrix(matrix,N);
             cout << endl;
         }
     }
 }
 
-int PIISC(PE matrix[N][N])
+int PIISC(vector<vector<PE>> &matrix, int N)
 {
     PE* prevPtr;
     bool stableMatching=true;
@@ -1205,7 +1230,7 @@ int PIISC(PE matrix[N][N])
             }
         }
         if(printDebug){
-            PrintMatchingMatrix(matrix);
+            PrintMatchingMatrix(matrix,N);
             cout << endl;
         }
         //Check for unstable pairings (SM)
@@ -1414,10 +1439,10 @@ int PIISC(PE matrix[N][N])
                     {
                         matrix[i][j].setMatchingPair(true);
                        // cout << "Pair " << i << "," << j << " broadcasting independent nm2" << endl;
-                        BroadcastMatchingCol(matrix,j,i);
-                        BroadcastMatchingRow(matrix,i,j);
-                        BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal());
-                        BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal());
+                        BroadcastMatchingCol(matrix,j,i,N);
+                        BroadcastMatchingRow(matrix,i,j,N);
+                        BroadcastMatchingColVal(matrix,j,matrix[i][j].getRightVal(),N);
+                        BroadcastMatchingRowVal(matrix,i,matrix[i][j].getLeftVal(),N);
                     }
                     else if((*(matrix[i][j].getR_pointer())).getRow()==matrix[i][j].getRow() && (*(matrix[i][j].getC_pointer())).getRow()!=matrix[i][j].getRow())
                     {
@@ -1431,10 +1456,10 @@ int PIISC(PE matrix[N][N])
                         }
                         matrix[i][(*(matrix[i][j].getC_pointer())).getCol()].setMatchingPair(true);
                         //cout << "Pair " << i << "," << (*(matrix[i][j].getC_pointer())).getCol() << " broadcasting c ptr" << endl;
-                        BroadcastMatchingCol(matrix,(*(matrix[i][j].getC_pointer())).getCol(),i);
-                        BroadcastMatchingRow(matrix,i,(*(matrix[i][j].getC_pointer())).getCol());
-                        BroadcastMatchingColVal(matrix,(*(matrix[i][j].getC_pointer())).getCol(),(*(matrix[i][j].getR_pointer())).getRightVal());
-                        BroadcastMatchingRowVal(matrix,i,(*(matrix[i][j].getC_pointer())).getLeftVal());
+                        BroadcastMatchingCol(matrix,(*(matrix[i][j].getC_pointer())).getCol(),i,N);
+                        BroadcastMatchingRow(matrix,i,(*(matrix[i][j].getC_pointer())).getCol(),N);
+                        BroadcastMatchingColVal(matrix,(*(matrix[i][j].getC_pointer())).getCol(),(*(matrix[i][j].getR_pointer())).getRightVal(),N);
+                        BroadcastMatchingRowVal(matrix,i,(*(matrix[i][j].getC_pointer())).getLeftVal(),N);
 
 
                         
@@ -1450,10 +1475,10 @@ int PIISC(PE matrix[N][N])
                         }
                         matrix[(*(matrix[i][j].getR_pointer())).getRow()][j].setMatchingPair(true);
                         //cout << "Pair " << (*(matrix[i][j].getR_pointer())).getRow() << "," << j << " broadcasting r ptr" << endl;
-                        BroadcastMatchingCol(matrix,(*(matrix[i][j].getR_pointer())).getCol(),i);
-                        BroadcastMatchingRow(matrix,(*(matrix[i][j].getR_pointer())).getRow(),j);
-                        BroadcastMatchingColVal(matrix,j,(*(matrix[i][j].getR_pointer())).getRightVal());
-                        BroadcastMatchingRowVal(matrix,(*(matrix[i][j].getR_pointer())).getRow(),(*(matrix[i][j].getC_pointer())).getLeftVal());
+                        BroadcastMatchingCol(matrix,(*(matrix[i][j].getR_pointer())).getCol(),i,N);
+                        BroadcastMatchingRow(matrix,(*(matrix[i][j].getR_pointer())).getRow(),j,N);
+                        BroadcastMatchingColVal(matrix,j,(*(matrix[i][j].getR_pointer())).getRightVal(),N);
+                        BroadcastMatchingRowVal(matrix,(*(matrix[i][j].getR_pointer())).getRow(),(*(matrix[i][j].getC_pointer())).getLeftVal(),N);
                     }
                 }
             }
@@ -1463,10 +1488,10 @@ int PIISC(PE matrix[N][N])
             if(maleFemaleDominantPairsPos[i]!=-1)
             {
                 matrix[i][maleFemaleDominantPairsPos[i]].setMatchingPair(true);
-                BroadcastMatchingCol(matrix,maleFemaleDominantPairsPos[i],i);
-                BroadcastMatchingRow(matrix,i,maleFemaleDominantPairsPos[i]);
-                BroadcastMatchingColVal(matrix,maleFemaleDominantPairsPos[i],matrix[i][maleFemaleDominantPairsPos[i]].getRightVal());
-                BroadcastMatchingRowVal(matrix,i,matrix[i][maleFemaleDominantPairsPos[i]].getLeftVal());
+                BroadcastMatchingCol(matrix,maleFemaleDominantPairsPos[i],i,N);
+                BroadcastMatchingRow(matrix,i,maleFemaleDominantPairsPos[i],N);
+                BroadcastMatchingColVal(matrix,maleFemaleDominantPairsPos[i],matrix[i][maleFemaleDominantPairsPos[i]].getRightVal(),N);
+                BroadcastMatchingRowVal(matrix,i,matrix[i][maleFemaleDominantPairsPos[i]].getLeftVal(),N);
             }
         }
         for(int i=0;i<N;i++)
@@ -1483,7 +1508,7 @@ int PIISC(PE matrix[N][N])
         int cycleResult;
         if(iterationCount>=3*N && CycleDetect)
         {
-            cycleResult = CycleDetection(matrix,cycleMatching,maleFemaleDominantPairsPos,iterationCount);
+            cycleResult = CycleDetection(matrix,cycleMatching,maleFemaleDominantPairsPos,iterationCount,N);
             if(cycleResult==1)
                 return (-1 * (iterationCount));
             else if(cycleResult==-1)
@@ -1504,7 +1529,7 @@ int PIISC(PE matrix[N][N])
     }
 }
 
-void PreferencesFromRDMFile(int preferences[2*N][N])
+void PreferencesFromRDMFile(vector<vector<int>> &preferences, int N)
 {
     ifstream rdm;
     rdm.open("prefList.txt");
@@ -1555,26 +1580,30 @@ void PrintSteps(int iterations, string indicator)
 }
 
 int main(int argc, char* argv[]){
-    int preferences[2*N][N];
-    PE matrix[N][N];
     srand(time(NULL));
-    if(argc!=2){
-        cout << "No entered loop amount" << endl;
+    if(argc<3){
+        cout << "Missing parameters: (Loop amount, N)" << endl;
         return 1;
     }
     int loopTimes = atoi(argv[1]);
     //cout << "LOOP"<<loopTimes << endl;
     int result;
+    int N = atoi(argv[2]);
+    vector<vector<int>> preferences;
+    vector<vector<PE>> matrix;
+    InitializeMatrix(matrix, N);
+    InitializePreferences(preferences, N);
     for(int i=0;i<loopTimes;i++)
     {
-        ResetMatrixValues(matrix);
-        GenerateRandomPreferences(preferences);
-        InitializeMatrix(matrix,preferences);
-        //PrintMatrix(matrix);
+        ResetMatrixValues(matrix,N);
+        GenerateRandomPreferences(preferences,N);
+        InitializeMatrixPrefs(matrix,preferences,N);
+        if(printDebug)
+            PrintMatrix(matrix,N);
         if(maleInitial)
         {
-            InitialMatching(matrix);
-            result = PIISC(matrix);
+            InitialMatching(matrix,N);
+            result = PIISC(matrix,N);
             if(result>-1)
             {
                 PrintSteps(result, "M");
@@ -1582,23 +1611,23 @@ int main(int argc, char* argv[]){
             }
             if(result!=-999)
             {
-                if(IsCompleteMatching(matrix))
+                if(IsCompleteMatching(matrix,N))
                 {
-                    if(CheckStableMatching(matrix))
+                    if(CheckStableMatching(matrix,N))
                     {    
                       PrintSteps(-1*result, "M-CD");
                       continue;
                     }
-                    PrintMatrix(matrix);
-                    PrintMatchingMatrix(matrix);
+                    PrintMatrix(matrix,N);
+                    PrintMatchingMatrix(matrix,N);
                 }
             }
         }
         if(femaleInitial)
         {
-            ResetMatrixValues(matrix);
-            InitialMatchingFemale(matrix);
-            result = PIISCFemale(matrix);
+            ResetMatrixValues(matrix,N);
+            InitialMatchingFemale(matrix,N);
+            result = PIISCFemale(matrix,N);
             if(result>-1)
             {
                 PrintSteps(result, "F");
@@ -1606,23 +1635,23 @@ int main(int argc, char* argv[]){
             }
             if(result!=-999)
             {
-                if(IsCompleteMatching(matrix))
+                if(IsCompleteMatching(matrix,N))
                 {
-                    if(CheckStableMatching(matrix))
+                    if(CheckStableMatching(matrix,N))
                     {    
                       PrintSteps(-1*result, "F-CD");
                       continue;
                     }
-                    PrintMatrix(matrix);
-                    PrintMatchingMatrix(matrix);
+                    PrintMatrix(matrix,N);
+                    PrintMatchingMatrix(matrix,N);
                 }
             }
         }
         if(halfInitial)
         {
-            ResetMatrixValues(matrix);
-            HalfInitialMatching(matrix);
-            result = PIISC(matrix);
+            ResetMatrixValues(matrix,N);
+            HalfInitialMatching(matrix,N);
+            result = PIISC(matrix,N);
             if(result>-1)
             {
                 PrintSteps(result, "ML");
@@ -1630,20 +1659,20 @@ int main(int argc, char* argv[]){
             }
             if(result!=-999)
             {
-                if(CheckStableMatching(matrix))
+                if(CheckStableMatching(matrix,N))
                 {    
                     PrintSteps(-1*result, "ML-CD");
                     continue;
                 }
-                PrintMatrix(matrix);
-                PrintMatchingMatrix(matrix);
+                PrintMatrix(matrix,N);
+                PrintMatchingMatrix(matrix,N);
             }
         }
         if(logFemaleInitial)
         {
-            ResetMatrixValues(matrix);
-            LogFemaleInitialMatching(matrix);
-            result = PIISCFemale(matrix);
+            ResetMatrixValues(matrix,N);
+            LogFemaleInitialMatching(matrix,N);
+            result = PIISCFemale(matrix,N);
             if(result>-1)
             {
                 PrintSteps(result, "FL");
@@ -1651,17 +1680,17 @@ int main(int argc, char* argv[]){
             }
             if(result!=-999)
             {
-                if(CheckStableMatching(matrix))
+                if(CheckStableMatching(matrix,N))
                 {    
                     PrintSteps(-1*result, "FL-CD");
                     continue;
                 }
-                PrintMatrix(matrix);
-                PrintMatchingMatrix(matrix);
+                PrintMatrix(matrix,N);
+                PrintMatchingMatrix(matrix,N);
             }
         }
         cout << "Cycle detected after tests" << endl;
-        PrintMatrix(matrix);
+        PrintMatrix(matrix,N);
     }
     return 0;
 }

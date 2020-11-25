@@ -9,10 +9,10 @@ g++ -o PIISC PIISC.cpp
 
 SECONDS=0
 echo "PII-SC Started for Random Inputs of size n=$2, $1 times"
-echo "PII-SC Started for Random Inputs of size n=$2, $1 times" >> runtimes.txt
+echo "PII-SC Started for Random Inputs of size n=$2, $1 times" >> HPCLruntimes.txt
 #./PIISC $1 >> ./RunResults/results_$2.txt
-./PIISC $1 >> ./CycleDetectResults/results_$2.txt
+./PIISC $1 $2 >> ./HPCLtests/results_$2.txt
 let minutes=$SECONDS/60
 let secondsAfter=$SECONDS-$minutes*60
 echo "PII-SC Completed $1 trials after $minutes minutes and $secondsAfter seconds"
-echo "PII-SC Completed $1 trials after $minutes minutes and $secondsAfter seconds" >> runtimes.txt
+echo "PII-SC Completed $1 trials after $minutes minutes and $secondsAfter seconds" >> HPCLruntimes.txt
