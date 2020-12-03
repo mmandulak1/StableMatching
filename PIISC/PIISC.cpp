@@ -6,7 +6,7 @@
 #include <fstream>
 #include <cmath>
 using namespace std;
-
+l
 //#define N 30
 #define maleInitial true
 #define femaleInitial true
