@@ -1618,8 +1618,8 @@ int main(int argc, char* argv[]){
                       PrintSteps(-1*result, "M-CD");
                       continue;
                     }
-                    PrintMatrix(matrix,N);
-                    PrintMatchingMatrix(matrix,N);
+                    //PrintMatrix(matrix,N);
+                    //PrintMatchingMatrix(matrix,N);
                 }
             }
         }
@@ -1642,8 +1642,8 @@ int main(int argc, char* argv[]){
                       PrintSteps(-1*result, "F-CD");
                       continue;
                     }
-                    PrintMatrix(matrix,N);
-                    PrintMatchingMatrix(matrix,N);
+                   // PrintMatrix(matrix,N);
+                   // PrintMatchingMatrix(matrix,N);
                 }
             }
         }
@@ -1664,8 +1664,8 @@ int main(int argc, char* argv[]){
                     PrintSteps(-1*result, "ML-CD");
                     continue;
                 }
-                PrintMatrix(matrix,N);
-                PrintMatchingMatrix(matrix,N);
+               // PrintMatrix(matrix,N);
+               // PrintMatchingMatrix(matrix,N);
             }
         }
         if(logFemaleInitial)
@@ -1685,8 +1685,8 @@ int main(int argc, char* argv[]){
                     PrintSteps(-1*result, "FL-CD");
                     continue;
                 }
-                PrintMatrix(matrix,N);
-                PrintMatchingMatrix(matrix,N);
+                //PrintMatrix(matrix,N);
+               //PrintMatchingMatrix(matrix,N);
             }
         }
         cout << "Cycle detected after tests" << endl;
