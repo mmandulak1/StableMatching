@@ -7,3 +7,5 @@ PIISC/testdata.txt
 PIISC/tmp
 PIISC/slurm-*
 PIISC/slurmfiles
+PIISC/SlurmRuns
+PIISC/HPCLtests
